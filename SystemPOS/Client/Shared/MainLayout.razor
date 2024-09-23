@@ -1,0 +1,72 @@
+﻿@inherits LayoutComponentBase
+@using SystemPOS.Client.Services;
+@using SystemPOS.Shared.POS;
+@inject iPosServices IposService
+@inject Blazored.SessionStorage.ISyncSessionStorageService sessionStorage
+
+@if (IposService.activeUser == null || IposService.activeUser.Usernames == "")
+{
+    <main>
+        <SystemPOS.Client.Pages.Index />
+    </main>
+    @* <div class="page">
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <main>
+            <div class="top-row px-4">
+                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            </div>
+
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div> *@
+    
+}
+else
+{
+
+    <div class="page">
+        <div class="sidebar" style="@IconMenuCssClass">
+            <NavMenu />
+        </div>
+
+        <main>
+            <div class="top-row px-4">
+                <div class="userDetailNav">
+                    Welcome, <b>@IposService.activeUser.Names </b>
+                </div>
+            </div>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+}
+@code{
+    private respLogin login = new ();
+    private bool _iconMenuActive { get; set; }
+    private string? IconMenuCssClass => _iconMenuActive ? "width: 80px;" : null;
+    private bool sessionActive;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IposService.activeUser == null)
+        {
+            IposService.activeUser = new respLogin();
+        }
+
+        if (sessionStorage.ContainKey("Username"))
+        {
+            sessionActive = true;
+            IposService.activeUser.Usernames = sessionStorage.GetItem<string>("Username");
+            IposService.activeUser.Names = sessionStorage.GetItem<string>("Name");
+            IposService.activeUser.Token = sessionStorage.GetItem<string>("Token");
+        }
+        StateHasChanged();
+    }
+}
+

@@ -1,0 +1,230 @@
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.ComponentModel;
+using System.Net.Http.Json;
+using SystemPOS.Shared.POS;
+
+namespace SystemPOS.Client.Services
+{
+    public class PosServices : iPosServices
+    {
+        private readonly HttpClient _http;
+
+        public PosServices(HttpClient http)
+        {
+            _http = http;
+        }
+
+        public respLogin activeUser { get; set; }
+        public async Task<ResultModel<respLogin>> Login(reqLog data)
+        {
+            ResultModel<respLogin> res = new ResultModel<respLogin>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                //_http.DefaultRequestHeaders.Add("Authorization", $"Bearer {Token}");
+                string jsong = JsonConvert.SerializeObject(data);
+                var resault = await _http.PostAsJsonAsync<reqLog>("api/ToPOSapi/Login", data);
+                var result = await resault.Content.ReadFromJsonAsync<ResultModel<respLogin>>();
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<List<respItem>>> PostItem (List<respItem> data)
+        {
+            ResultModel<List<respItem>> res = new ResultModel<List<respItem>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                string jsong = JsonConvert.SerializeObject(data);
+                var resault = await _http.PostAsJsonAsync<List<respItem>>("api/ToPOSapi/PostItem", data);
+                var result = await resault.Content.ReadFromJsonAsync<ResultModel<List<respItem>>>();
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch(Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<List<respItem>>> GetItem(string Username)
+        {
+            ResultModel<List<respItem>> res = new ResultModel<List<respItem>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                var result = await _http.GetFromJsonAsync<ResultModel<List<respItem>>>($"api/ToPOSapi/GetItem/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch(Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<bool>> DeleteItem(int id, string token)
+        {
+            ResultModel<bool> res = new ResultModel<bool>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                //var result = await _http.GetFromJsonAsync<ResultModel<bool>>($"api/ToPOSapi/DeleteItem/{id}");
+                var request = new HttpRequestMessage(HttpMethod.Delete, $"api/ToPOSapi/DeleteItem/{id}");
+                var response = await _http.SendAsync(request);
+
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ResultModel<bool>>();
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = false;
+                    res.isSuccess = response.IsSuccessStatusCode;
+                    res.ErrorCode = response.StatusCode.ToString();
+                    res.ErrorMessage = response.RequestMessage.ToString();
+                }
+            }
+            catch(Exception ex)
+            {
+                res.Data = false;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<List<Category>>> GetCategory(string Username,string token)
+        {
+            ResultModel<List<Category>> res = new ResultModel<List<Category>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<Category>>>($"api/ToPOSapi/GetCategory/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<bool>> UpdateItem(respItem data)
+        {
+            ResultModel<bool> res = new ResultModel<bool>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                var response = await _http.PutAsJsonAsync("api/ToPOSapi/PutItem", data);
+                var result = await response.Content.ReadFromJsonAsync<ResultModel<bool>>();
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = false;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = false;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+    }
+}

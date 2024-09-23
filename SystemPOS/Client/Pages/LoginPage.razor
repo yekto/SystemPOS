@@ -1,0 +1,50 @@
+﻿@* @page "/"
+@page "/Login" *@
+@inject IJSRuntime JS
+@inject NavigationManager navigate
+
+<div class="form-bg">
+    <div class="container">
+        <div class="row center">
+            <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6">
+                <div class="text-center">
+                    <img src="/img/mitra10.png" style="width: 185px;" alt="logo">
+                    <h5>Welcome to Mitra10 Logistics</h5>
+                </div>
+                <br />
+                <div class="form-container">
+                    <h3 class="title">Sign In Account</h3>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <span class="input-icon"><i class="fa fa-user"></i></span>
+                            <input type="text" class="form-control" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <span class="input-icon"><i class="fa fa-lock"></i></span>
+                            <input type="password"  class="form-control" placeholder="Password">
+                        </div>
+                        <div>
+                            <button class="btn btn-primary btn-block" style="width:100%; padding:3%;" type="button" >Login</button>
+                        </div>
+                        @* <div class=" d-flex justify-content-end">
+                            <button class="btn btn-primary me-2" type="button" @onclick="@(() => checkLogin())">Login</button>
+                            <button class="btn btn-danger" type="button" @onclick="@(() => Clear())">Clear</button>
+                        </div> *@
+                      
+                        
+                    </form>
+                </div>
+                <div class="footer title">
+                    <div>
+                    </div>
+                    <div>
+                        Copyright &copy; @DateTime.Now.Year 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+

@@ -1,0 +1,17 @@
+﻿using SystemPOS.Shared;
+using SystemPOS.Shared.POS;
+
+namespace SystemPOS.Client.Services
+{
+    public interface iPosServices
+    {
+        respLogin activeUser { get; set; } 
+        Task<ResultModel<respLogin>> Login(reqLog req);
+        Task<ResultModel<List<respItem>>> PostItem(List<respItem> items);
+        Task<ResultModel<List<respItem>>> GetItem(string Username);
+        Task<ResultModel<bool>> DeleteItem( int id, string token);
+        Task<ResultModel<List<Category>>> GetCategory(string Username, string token);
+        Task<ResultModel<bool>> UpdateItem(respItem data);
+
+    }
+}

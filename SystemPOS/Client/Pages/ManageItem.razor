@@ -1,0 +1,251 @@
+﻿@page "/item"
+
+@using SystemPOS.Client.Services;
+@inject iPosServices iposServices
+@inject NavigationManager navigate
+@inject Blazored.SessionStorage.ISyncSessionStorageService sessionStorage
+@inject IJSRuntime JS
+
+
+<style>
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+        .table-bordered th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table-bordered td p {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+            padding: 8px; /* Optional: Padding for cells */
+            text-align: center;
+            vertical-align: middle;
+        }
+</style>
+
+<h3>Manage Item</h3>
+
+
+<button class="btn btn-danger mt-3" style="margin-right:4px;" @onclick="@(()=>triggerpopupUpload())">+ Add Item</button>
+
+@if (listItem.Count > 0)
+{
+    <br />
+    <br />
+    <div style="overflow-x: auto; max-width: 1200px; font-size:13px;">
+        <table class="table table-bordered">
+            <thead>
+                <tr style="color: white;background-color:#3C3491;">
+                    <th scope="col" class="no-column">No</th>
+                    <th scope="col" class="kolom">Item Name</th>
+                    <th scope="col" class="kolom">Category</th>
+                    <th scope="col" class="kolom">Price</th>
+                    <th scope="col" class="kolom">Qty</th>
+                    <th scope="col" class="kolom">Picture</th>
+                    <th scope="col" class="kolom">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var index = 1;
+                    string c;
+                }
+                @foreach (var v in listItem)
+                {
+
+                    <tr style="color: black; ">
+                        <th scope="row">@index</th>
+                        <td>@v.ItemName</td>
+                        
+                        @{
+                            string m = masterCategory.Where(x => x.Id == v.Category).Select(x => x.CatName).FirstOrDefault();
+                        }
+                        <td>@m</td>
+
+                        
+                        <td>@v.Price</td>
+                        <td>@v.Qty</td>
+                        <td>
+                            @{
+                                // Assuming v.Path is a byte array
+                                string base64Image = v.Path;
+                                string mime = v.Mime;
+                                string imgSrc = $"data:{mime};base64,{base64Image}"; // Use JPEG MIME type
+                            }
+                            <img src="@imgSrc" alt="Item Image" style="max-width: 100px; max-height: 80px;" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-warning" style="font-size:12px;" @onclick="@(() => triggerpopupedit(v.Id))">
+                                <i class="oi oi-task"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger" style="font-size:12px;" @onclick="@(() => triggerpopupdelete(v.Id))">
+                                <i class="oi oi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    index++;
+                }
+            </tbody>
+        </table>
+        @* <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-secondary" style="margin:4px;" @onclick="PrevPage" disabled="@(!CanPrev)">Previous</button>
+            <span>Page @currentPage of @totalPages</span>
+            <button class="btn btn-secondary" style="margin:4px;" @onclick="NextPage" disabled="@(!CanNext)">Next</button>
+        </div> *@
+    </div>
+}
+
+@if (modalUploadItem)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 1200px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Item</h5>
+                    <button type="button" class="btn-close" @onclick="@(() => triggerpopupUpload())"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-danger mt-3" style="margin-right:4px;" @onclick="@(()=>addingItem())">+ Add Data</button>
+                    <br /><br />
+                    <div class="table-responsive" style="font-size:13px;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr style="background-color: #3C3491; color: white;">
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Picture</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in addItem)
+                                {
+                                    <tr>
+                                        <td><input class="form-control" @bind="item.ItemName" /></td>
+                                        
+                                        <td>
+                                            <div class="dropdown">
+                                                <select class="form-control" @bind="item.Category" >
+                                                <option value="">Select Category</option>
+                                                @foreach (var category in masterCategory.OrderBy(x => x.Id))
+                                                {
+                                                    <option value="@category.Id">@category.CatName</option>
+                                                }
+                                            </select>
+                                            </div>
+                                        </td>
+
+                                        <td><input class="form-control" @bind="item.Price" /></td>
+                                        <td><input class="form-control" @bind="item.Qty" /></td>
+                                        <td>
+                                            <div class="form-container mb-3" style="font-size:12px;">
+                                                <label for="exampleFormControlInput1" class="form-label"> (.jpeg/.jpg/.img/.png)</label>
+                                                <InputFile style="font-size:10px;" class="form-control" @key=@(inputFileId) OnChange="@((e) => OnInputFileChange(e, item))" accept=".jpeg,.jpg,.img,.png" maxFileSize="5242880" capture required />
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle"><button type="button" class="btn btn-danger" @onclick="@(() => DeleteRow(item))">x</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="@(() => triggerpopupUpload())">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="@(() => UploadItem(addItem))">Ya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (modalAlertDeleteItem)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 500px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Warning</h5>
+                    <button type="button" class="btn-close" @onclick="@(() => triggerpopupdelete(1))"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure want to DELETE?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="@(() => triggerpopupdelete(1))">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="@(() => deleteItembyId(deleteId))">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (modalUpdateItem)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 500px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit</h5>
+                    <button type="button" class="btn-close" @onclick="@(() => triggerpopupedit(0))"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive" style="font-size:13px;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr style="background-color: #3C3491; color: white;">
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Picture</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input class="form-control" @bind="editItem.ItemName" /></td>
+
+                                    <td>
+                                        <div class="dropdown">
+                                            <select class="form-control" @bind="editItem.Category">
+                                                <option value="">Select Category</option>
+                                                @foreach (var category in masterCategory.OrderBy(x => x.Id))
+                                                {
+                                                    <option value="@category.Id">@category.CatName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </td>
+
+                                    <td><input class="form-control" @bind="editItem.Price" /></td>
+                                    <td><input class="form-control" @bind="editItem.Qty" /></td>
+                                    <td>
+                                        <div class="form-container mb-3" style="font-size:12px;">
+                                            <label for="exampleFormControlInput1" class="form-label"> (.jpeg/.jpg/.img/.png)</label>
+                                            <InputFile style="font-size:10px;" class="form-control" @key=@(inputFileId) OnChange="@((e) => OnInputFileChange(e, editItem))" accept=".jpeg,.jpg,.img,.png" maxFileSize="5242880" capture required />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="@(() => triggerpopupedit(0))">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="@(() => updateItem(editItem))">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
