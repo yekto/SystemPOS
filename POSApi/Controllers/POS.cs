@@ -17,6 +17,7 @@ namespace POSApi.Controllers
         private readonly string _IssuerPOS;
         private readonly string _SigningKeyPOS;
 
+
         POSService pOSService = new POSService();
 
         public POS(HttpClient http, IConfiguration config)
