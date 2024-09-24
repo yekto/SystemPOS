@@ -1,0 +1,77 @@
+﻿@page "/pos"
+
+@using SystemPOS.Client.Services;
+@inject iPosServices iposServices
+@inject NavigationManager navigate
+@inject Blazored.SessionStorage.ISyncSessionStorageService sessionStorage
+@inject IJSRuntime JS
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="alert alert-danger">
+        @alertMessage
+    </div>
+}
+
+<button class="btn btn-danger mt-3" style="margin-right:4px;" @onclick="@(()=>ActivePage(1))">Point Of Sales</button>
+<button class="btn btn-warning mt-3" style="margin-right:4px;" @onclick="@(()=>ActivePage(2))">Report Sales</button>
+<button class="btn btn-success mt-3" style="margin-right:4px;" @onclick="@(()=>ActivePage(3))">Stock</button>
+<br />
+<br />
+
+@if (Poss)
+{
+    <div style="overflow-x: auto; max-width: 1200px; font-size:13px;">
+        <table class="table table-bordered">
+            <thead>
+                <tr style="color: white;background-color:#3C3491;">
+                    <th scope="col" class="kolom">Item Name</th>
+                    <th scope="col" class="kolom">Category</th>
+                    <th scope="col" class="kolom">Price</th>
+                    <th scope="col" class="kolom">Qty</th>
+                    <th scope="col" class="kolom">Total Price</th>
+                    <th scope="col" class="kolom">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="color: black; ">
+                    <td>
+                        <div class="dropdown">
+                            <select class="form-control" value="sell.itemName" @onchange="@(e => OnItemChange(e, sell))" >
+                                <option value="">Select Category</option>
+                                @foreach (var item in listItem.OrderBy(x => x.Id))
+                                {
+                                    <option value="@item.Id">@item.ItemName</option>
+                                }
+                            </select>
+                        </div>
+                    </td>
+                    <td><input class="form-control" @bind="sell.category" disabled/></td>
+                    <td><input class="form-control" @bind="sell.price" disabled/></td>
+                    <td><input class="form-control" value="@(sell.qty.ToString("0"))" @onchange="@(e => OnQtyChange(e, sell))" placeholder="" /></td>
+                    <td><input class="form-control" @bind="sell.totalPrice" disabled/></td>
+                    <td>
+                        <button type="button" class="btn btn-danger" style="font-size:12px;" @onclick="@(() => Selling(sell))">
+                            <i class="oi oi-dollar"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+    <br />
+    <br />
+
+
+}
+else if(Reports){
+
+}
+else if (Stocks)
+{
+    
+}
+
+

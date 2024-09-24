@@ -64,12 +64,14 @@ namespace SystemPOS.Server.Controllers
 
         #region Item Management
         [HttpPost("PostItem")]
-        public async Task<IActionResult> PostItem(List<respItem> data)
+        public async Task<IActionResult> PostItem([FromHeader(Name = "Authorization")] string token, List<respItem> data)
         {
             IActionResult actionResult = null;
             ResultModel<List<respItem>> res = new ResultModel<List<respItem>>();
             try
             {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
                 var resault = await _http.PostAsJsonAsync<List<respItem>>("api/POSda/PostItem", data);
                 var result = await resault.Content.ReadFromJsonAsync<ResultModel<List<respItem>>>();
 
@@ -102,12 +104,14 @@ namespace SystemPOS.Server.Controllers
         }
 
         [HttpGet("GetItem/{Username}")]
-        public async Task<IActionResult> GetItem(string Username)
+        public async Task<IActionResult> GetItem([FromHeader(Name = "Authorization")] string token, string Username)
         {
             IActionResult actionResult = null;
             ResultModel<List<respItem>> res = new ResultModel<List<respItem>>();
             try
             {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
                 var result = await _http.GetFromJsonAsync<ResultModel<List<respItem>>>($"api/POSda/GetItem/{Username}");
 
                 if (result.isSuccess)
@@ -147,7 +151,6 @@ namespace SystemPOS.Server.Controllers
             {
                 _http.DefaultRequestHeaders.Clear();
                 _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
-                //var req = await _http.GetFromJsonAsync<ResultModel<bool>>($"api/POSda/DeleteItem/{id}");
 
                 var request = new HttpRequestMessage(HttpMethod.Delete, $"api/POSda/DeleteItem/{id}");
                 var response = await _http.SendAsync(request);
@@ -222,14 +225,14 @@ namespace SystemPOS.Server.Controllers
         }
 
         [HttpPut("PutItem")]
-        public async Task<IActionResult> UpdateItem([FromBody] respItem updateItem)
+        public async Task<IActionResult> UpdateItem([FromHeader(Name = "Authorization")] string token, [FromBody] respItem updateItem)
         {
             IActionResult actionResult = null;
             ResultModel<bool> res = new ResultModel<bool>();
             try
             {
                 _http.DefaultRequestHeaders.Clear();
-
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
                 var response = await _http.PutAsJsonAsync("api/POSda/PutItem", updateItem);
                 var result = await response.Content.ReadFromJsonAsync<ResultModel<bool>>();
 
@@ -260,6 +263,49 @@ namespace SystemPOS.Server.Controllers
             }
             return actionResult;
         }
+        #endregion
+
+        #region POS
+        [HttpPost("InputSales")]
+        public async Task<IActionResult> InputSales([FromHeader(Name = "Authorization")] string token, POSmodel data)
+        {
+            IActionResult actionResult = null;
+            ResultModel<string> res = new ResultModel<string>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
+                var resault = await _http.PostAsJsonAsync<POSmodel>("api/POSda/InputSales", data);
+                var result = await resault.Content.ReadFromJsonAsync<ResultModel<string>>();
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = "Bad request ToPOSapi" + ex.Message.ToString();
+                actionResult = BadRequest(res);
+            }
+            return actionResult;
+        }
+
         #endregion
     }
 }

@@ -60,7 +60,7 @@ namespace SystemPOS.Client.Pages
                 }
             }
 
-            var asd = await iposServices.GetItem(username);
+            var asd = await iposServices.GetItem(username, iposServices.activeUser.Token);
             
             if (asd.Data == null)
             {
@@ -126,7 +126,7 @@ namespace SystemPOS.Client.Pages
             {
                 try
                 {
-                    var result = await iposServices.PostItem(data);
+                    var result = await iposServices.PostItem(data, iposServices.activeUser.Token);
                     if (result.isSuccess)
                     {
                         addItem.Clear();
@@ -228,7 +228,12 @@ namespace SystemPOS.Client.Pages
 
         public async Task updateItem(respItem file)
         {
-            var a = await iposServices.UpdateItem(file);
+            var a = await iposServices.UpdateItem(file, iposServices.activeUser.Token);
+            if (a != null)
+            {
+                modalUpdateItem = false;
+                await LoadData();
+            }
             Console.WriteLine(a);
             Console.WriteLine(editItem);
             StateHasChanged();

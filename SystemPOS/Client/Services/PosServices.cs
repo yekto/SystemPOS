@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel;
+using System.Globalization;
 using System.Net.Http.Json;
 using SystemPOS.Shared.POS;
 
@@ -52,12 +53,13 @@ namespace SystemPOS.Client.Services
             }
             return res;
         }
-        public async Task<ResultModel<List<respItem>>> PostItem (List<respItem> data)
+        public async Task<ResultModel<List<respItem>>> PostItem (List<respItem> data, string token)
         {
             ResultModel<List<respItem>> res = new ResultModel<List<respItem>>();
             try
             {
                 _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 string jsong = JsonConvert.SerializeObject(data);
                 var resault = await _http.PostAsJsonAsync<List<respItem>>("api/ToPOSapi/PostItem", data);
                 var result = await resault.Content.ReadFromJsonAsync<ResultModel<List<respItem>>>();
@@ -87,12 +89,13 @@ namespace SystemPOS.Client.Services
             }
             return res;
         }
-        public async Task<ResultModel<List<respItem>>> GetItem(string Username)
+        public async Task<ResultModel<List<respItem>>> GetItem(string Username, string token)
         {
             ResultModel<List<respItem>> res = new ResultModel<List<respItem>>();
             try
             {
                 _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var result = await _http.GetFromJsonAsync<ResultModel<List<respItem>>>($"api/ToPOSapi/GetItem/{Username}");
 
                 if (result.isSuccess)
@@ -192,12 +195,13 @@ namespace SystemPOS.Client.Services
             }
             return res;
         }
-        public async Task<ResultModel<bool>> UpdateItem(respItem data)
+        public async Task<ResultModel<bool>> UpdateItem(respItem data, string token)
         {
             ResultModel<bool> res = new ResultModel<bool>();
             try
             {
                 _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
                 var response = await _http.PutAsJsonAsync("api/ToPOSapi/PutItem", data);
                 var result = await response.Content.ReadFromJsonAsync<ResultModel<bool>>();
 
@@ -220,6 +224,42 @@ namespace SystemPOS.Client.Services
             catch (Exception ex)
             {
                 res.Data = false;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<string>> InputSales(POSmodel data, string token)
+        {
+            ResultModel<string> res = new ResultModel<string>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                string jsong = JsonConvert.SerializeObject(data);
+                var resault = await _http.PostAsJsonAsync<POSmodel>("api/ToPOSapi/InputSales", data);
+                var result = await resault.Content.ReadFromJsonAsync<ResultModel<string>>();
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
                 res.isSuccess = false;
                 res.ErrorCode = "99";
                 res.ErrorMessage = ex.Message;

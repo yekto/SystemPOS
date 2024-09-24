@@ -82,6 +82,7 @@ namespace POSApi.Controllers
 
         #region Item Management
         [HttpPost("PostItem")]
+        [Authorize(AuthenticationSchemes = "BetaClient")]
         public async Task<IActionResult> PostItem(List<respItem> item)
         {
             IActionResult actionResult = null;
@@ -111,6 +112,7 @@ namespace POSApi.Controllers
         }
 
         [HttpGet("GetItem/{Username}")]
+        [Authorize(AuthenticationSchemes = "BetaClient")]
         public async Task<IActionResult> GetItem(string Username)
         {
             IActionResult actionResult = null;
@@ -155,6 +157,7 @@ namespace POSApi.Controllers
         }
 
         [HttpPut("PutItem")]
+        [Authorize(AuthenticationSchemes = "BetaClient")]
         public async Task<IActionResult> UpdateItem([FromBody] respItem updateItem)
         {
             IActionResult actionResult = null;
@@ -298,5 +301,41 @@ namespace POSApi.Controllers
 
         #endregion 
 
+
+        [HttpPost("InputSales")]
+        [Authorize(AuthenticationSchemes = "BetaClient")]
+        public async Task<IActionResult> InputSales(POSmodel data)
+        {
+            IActionResult actionResult = null;
+            DataTable dt = new DataTable();
+            string resault = "";
+            ResultModel<string> res = new ResultModel<string>();
+            try
+            {
+                dt = pOSService.InputSales(data,_conString);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow d in dt.Rows)
+                    {
+                        resault = d["MESSAGE"].ToString();
+                    }
+                }
+                res.Data = resault;
+                res.isSuccess = true;
+                res.ErrorCode = "00";
+                res.ErrorMessage = "";
+
+                actionResult = Ok(res);
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+
+            }
+            return actionResult;
+        }
     }
 }

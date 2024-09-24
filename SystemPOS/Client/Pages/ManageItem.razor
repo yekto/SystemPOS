@@ -30,6 +30,13 @@
         }
 </style>
 
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="alert alert-danger">
+        @alertMessage
+    </div>
+}
+
 <h3>Manage Item</h3>
 
 
@@ -79,7 +86,7 @@
                                 string mime = v.Mime;
                                 string imgSrc = $"data:{mime};base64,{base64Image}"; // Use JPEG MIME type
                             }
-                            <img src="@imgSrc" alt="Item Image" style="max-width: 100px; max-height: 80px;" />
+                            <img src="@imgSrc" alt="Item Image" style="max-width: 100px; max-height: 70px;" />
                         </td>
                         <td>
                             <button type="button" class="btn btn-warning" style="font-size:12px;" @onclick="@(() => triggerpopupedit(v.Id))">
@@ -192,7 +199,7 @@
 @if (modalUpdateItem)
 {
     <div class="modal" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
-        <div class="modal-dialog modal-lg" role="document" style="max-width: 500px;">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 1200px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit</h5>

@@ -7,11 +7,12 @@ namespace SystemPOS.Client.Services
     {
         respLogin activeUser { get; set; } 
         Task<ResultModel<respLogin>> Login(reqLog req);
-        Task<ResultModel<List<respItem>>> PostItem(List<respItem> items);
-        Task<ResultModel<List<respItem>>> GetItem(string Username);
+        Task<ResultModel<List<respItem>>> PostItem(List<respItem> items, string token);
+        Task<ResultModel<List<respItem>>> GetItem(string Username, string token);
         Task<ResultModel<bool>> DeleteItem( int id, string token);
         Task<ResultModel<List<Category>>> GetCategory(string Username, string token);
-        Task<ResultModel<bool>> UpdateItem(respItem data);
+        Task<ResultModel<bool>> UpdateItem(respItem data, string token);
+        Task<ResultModel<string>> InputSales(POSmodel data, string token);
 
     }
 }

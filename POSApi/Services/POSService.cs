@@ -242,5 +242,47 @@ namespace POSApi.Services
             Console.WriteLine(tokken);
             return tokken;
         }
+    
+        internal DataTable InputSales(POSmodel data, string _conString)
+        {
+            lock(_lockObject)
+            {
+                DataTable dt = new DataTable();
+                using (SqlConnection con = new SqlConnection(_conString))
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand();
+                    try
+                    {
+                        command.Connection = con;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandText = "[dbo].[InsertPOS]";
+                        command.CommandTimeout = 1000;
+
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@itemId", data.itemId);
+                        command.Parameters.AddWithValue("@itemName", data.itemName);
+                        command.Parameters.AddWithValue("@price", data.price);
+                        command.Parameters.AddWithValue("@qty", data.qty);
+                        command.Parameters.AddWithValue("@totalPrice", data.totalPrice);
+                        command.Parameters.AddWithValue("@date", data.date);
+                        command.Parameters.AddWithValue("@username", data.username);
+
+                        SqlDataAdapter da = new SqlDataAdapter();
+                        da.SelectCommand = command;
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        con.Close();
+                    }
+                }
+                return dt;
+            }
+        }
     }
 }
