@@ -337,5 +337,131 @@ namespace POSApi.Controllers
             }
             return actionResult;
         }
+        
+        [HttpGet("GetSales/{Username}")]
+        [Authorize(AuthenticationSchemes = "BetaClient")]
+        public async Task<IActionResult> GetSales(string Username)
+        {
+            IActionResult actionResult = null;
+            DataTable dt = new DataTable();
+            List<POSmodel> resault = new List<POSmodel>();
+            ResultModel<List<POSmodel>> res = new ResultModel<List<POSmodel>>();
+            try
+            {
+                dt = pOSService.getSales(Username, _conString);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow d in dt.Rows)
+                    {
+                        POSmodel x = new POSmodel();
+                        x.itemId = d["ItemId"].ToString();
+                        x.itemName = d["ItemName"].ToString();
+                        x.price = Convert.ToDecimal(d["Price"]);
+                        x.category = d["CategoryName"].ToString();
+                        x.qty = Convert.ToDecimal(d["Qty"]);
+                        x.totalPrice = Convert.ToDecimal(d["TotalPrice"]);
+                        x.date = Convert.ToDateTime(d["Date"]);
+                        x.username = d["Username"].ToString();
+                        resault.Add(x);
+                    }
+                }
+                res.Data = resault;
+                res.isSuccess = true;
+                res.ErrorCode = "00";
+                res.ErrorMessage = "";
+
+                actionResult = Ok(res);
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+
+            }
+            return actionResult;
+        }
+
+        [HttpGet("GetReportSales/{Username}")]
+        [Authorize(AuthenticationSchemes = "BetaClient")]
+        public async Task<IActionResult> GetReportSales(string Username)
+        {
+            IActionResult actionResult = null;
+            DataTable dt = new DataTable();
+            List<ReportSales> resault = new List<ReportSales>();
+            ResultModel<List<ReportSales>> res = new ResultModel<List<ReportSales>>();
+            try
+            {
+                dt = pOSService.getreportsales(Username, _conString);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow d in dt.Rows)
+                    {
+                        ReportSales x = new ReportSales();
+                        x.Date = Convert.ToDateTime(d["FormattedDate"]);
+                        x.ItemName = d["ItemName"].ToString();
+                        x.CategoryName = d["CategoryName"].ToString();
+                        x.TotalTransaction = d["TotalTransaction"].ToString();
+                        resault.Add(x);
+                    }
+                }
+                res.Data = resault;
+                res.isSuccess = true;
+                res.ErrorCode = "00";
+                res.ErrorMessage = "";
+
+                actionResult = Ok(res);
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+
+            }
+            return actionResult;
+        }
+
+        [HttpGet("GetReportStock/{Username}")]
+        public async Task<IActionResult> GetReportStock(string Username)
+        {
+            IActionResult actionResult = null;
+            DataTable dt = new DataTable();
+            List<ReportStock> resault = new List<ReportStock>();
+            ResultModel<List<ReportStock>> res = new ResultModel<List<ReportStock>>();
+            try
+            {
+                dt = pOSService.getReportStock(Username, _conString);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow d in dt.Rows)
+                    {
+                        ReportStock x = new ReportStock();
+                        x.ItemName = d["ItemName"].ToString();
+                        x.JumlahStock = Convert.ToDecimal(d["StockOnHand"]);
+                        x.Category = d["CategoryName"].ToString();
+                        x.Harga = Convert.ToDecimal(d["Price"]);
+                        resault.Add(x);
+                    }
+                }
+                res.Data = resault;
+                res.isSuccess = true;
+                res.ErrorCode = "00";
+                res.ErrorMessage = "";
+
+                actionResult = Ok(res);
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+
+            }
+            return actionResult;
+        }
     }
 }

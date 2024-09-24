@@ -64,13 +64,95 @@
     <br />
     <br />
 
+    <div style="overflow-x: auto; max-width: 1200px; font-size:13px;">
+        <table class="table table-bordered">
+            <thead>
+                <tr style="color: white;background-color:#3C3491;">
+                    <th scope="col" class="kolom">Item Name</th>
+                    <th scope="col" class="kolom">Category</th>
+                    <th scope="col" class="kolom">Price</th>
+                    <th scope="col" class="kolom">Qty</th>
+                    <th scope="col" class="kolom">Total Price</th>
+                    <th scope="col" class="kolom">Transaction Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var jo in history)
+                {
+                    <tr style="color: black; ">
+                        <td>@jo.itemName</td>
+                        <td>@jo.category</td>
+                        <td>@jo.price</td>
+                        <td>@jo.qty</td>
+                        <td>@jo.totalPrice</td>
+                        <td>@jo.date</td>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+
 
 }
 else if(Reports){
+    @if(reportSales.Count > 0)
+    {
+        <div style="overflow-x: auto; max-width: 1200px; font-size:13px;">
+            <table class="table table-bordered">
+                <thead>
+                    <tr style="color: white;background-color:#3C3491;">
+                        <th scope="col" class="kolom">Date</th>
+                        <th scope="col" class="kolom">Item Name</th>
+                        <th scope="col" class="kolom">Category</th>
+                        <th scope="col" class="kolom">Total Transaction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var jo in reportSales)
+                    {
+                        <tr style="color: black; ">
+                            <td>@jo.Date.ToString("dd MMMM yyyy")</td>
+                            <td>@jo.ItemName</td>
+                            <td>@jo.CategoryName</td>
+                            <td>@jo.TotalTransaction</td>
+                        </tr>
+                    }
 
+                </tbody>
+            </table>
+        </div>
+    }
 }
 else if (Stocks)
 {
+    @if (reportStock.Count > 0)
+    {
+        <div style="overflow-x: auto; max-width: 1200px; font-size:13px;">
+            <table class="table table-bordered">
+                <thead>
+                    <tr style="color: white;background-color:#3C3491;">
+                        <th scope="col" class="kolom">Item Name</th>
+                        <th scope="col" class="kolom">Category</th>
+                        <th scope="col" class="kolom">Stock on Hand</th>
+                        <th scope="col" class="kolom">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var jo in reportStock)
+                    {
+                        <tr style="color: black; ">
+                            <td>@jo.ItemName</td>
+                            <td>@jo.Category</td>
+                            <td>@jo.JumlahStock</td>
+                            <td>@jo.Harga</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    }
     
 }
 

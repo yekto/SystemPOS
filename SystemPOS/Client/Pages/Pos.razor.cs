@@ -10,7 +10,10 @@ namespace SystemPOS.Client.Pages
         private IJSObjectReference _jsModule;
 
         List<respItem> listItem = new List<respItem>();
+        List<POSmodel> history = new List<POSmodel>();
         List<Category> masterCategory = new List<Category>();
+        List<ReportSales> reportSales = new List<ReportSales>();  
+        List<ReportStock> reportStock = new List<ReportStock>();
         POSmodel sell = new POSmodel();
 
         private bool isLoading = false;
@@ -28,6 +31,12 @@ namespace SystemPOS.Client.Pages
 
         public async Task LoadData()
         {
+            listItem.Clear();
+            history.Clear();
+            masterCategory.Clear();
+            reportSales.Clear();
+            sell = new POSmodel();
+
             string username = iposServices.activeUser.Usernames;
             var f = await iposServices.GetCategory(username, iposServices.activeUser.Token);
             if (f != null)
@@ -60,6 +69,55 @@ namespace SystemPOS.Client.Pages
                     z.Path = x.Path;
                     z.Mime = x.Mime;
                     listItem.Add(z);
+                }
+            }
+
+            var hist = await iposServices.GetSales(iposServices.activeUser.Usernames, iposServices.activeUser.Token);
+            if (hist != null)
+            {
+                history.Clear();
+                foreach(var s in hist.Data)
+                {
+                    POSmodel c =new POSmodel();
+                    c.itemId = s.itemId;
+                    c.itemName = s.itemName;
+                    c.price = s.price;
+                    c.category = s.category;
+                    c.qty = s.qty;
+                    c.totalPrice = s.totalPrice;
+                    c.date = s.date;
+                    c.username = s.username;
+                    history.Add(c);
+                }
+            }
+
+            var tx = await iposServices.GetReportSales(iposServices.activeUser.Usernames, iposServices.activeUser.Token);
+            if (tx != null)
+            {
+                reportSales.Clear();
+                foreach (var s in tx.Data)
+                {
+                    ReportSales fs = new ReportSales();
+                    fs.Date = s.Date;
+                    fs.ItemName = s.ItemName;
+                    fs.CategoryName = s.CategoryName;
+                    fs.TotalTransaction = s.TotalTransaction;
+                    reportSales.Add(fs);
+                }
+            }
+
+            var tc = await iposServices.GetReportStock(iposServices.activeUser.Usernames, iposServices.activeUser.Token);
+            if (tc != null)
+            {
+                reportStock.Clear();
+                foreach (var z in tc.Data)
+                {
+                    ReportStock q = new ReportStock();
+                    q.ItemName = z.ItemName;
+                    q.JumlahStock = z.JumlahStock;
+                    q.Category = z.Category;
+                    q.Harga = z.Harga;
+                    reportStock.Add(q);
                 }
             }
             StateHasChanged ();
@@ -150,7 +208,8 @@ namespace SystemPOS.Client.Pages
             var a = await iposServices.InputSales(t, iposServices.activeUser.Token);
             if (a.isSuccess)
             {
-                
+                sell = new POSmodel();
+                await LoadData();
             }
         }
     }

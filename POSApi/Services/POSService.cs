@@ -284,5 +284,110 @@ namespace POSApi.Services
                 return dt;
             }
         }
+        internal DataTable getSales(string username, string _conString)
+        {
+            lock(_lockObject)
+            {
+                DataTable dt = new DataTable();
+                using (SqlConnection con = new SqlConnection(_conString))
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand();
+                    try
+                    {
+                        command.Connection = con;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandText = "[dbo].[getPosSales]";
+                        command.CommandTimeout = 1000;
+
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Username", username);
+
+                        SqlDataAdapter da = new SqlDataAdapter();
+                        da.SelectCommand = command;
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        con.Close();
+                    }
+                }
+                return dt;
+            }
+        }
+        internal DataTable getreportsales(string Username, string _conString)
+        {
+            lock(_lockObject)
+            {
+                DataTable dt = new DataTable();
+                using (SqlConnection con = new SqlConnection(_conString))
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand();
+                    try
+                    {
+                        command.Connection = con;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandText = "[dbo].[ReportPos]";
+                        command.CommandTimeout = 1000;
+
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Username", Username);
+
+                        SqlDataAdapter da = new SqlDataAdapter();
+                        da.SelectCommand = command;
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        con.Close();
+                    }
+                }
+                return dt;
+            }
+        }
+        internal DataTable getReportStock(string Username, string _conString)
+        {
+            lock (_lockObject)
+            {
+                DataTable dt = new DataTable();
+                using (SqlConnection con = new SqlConnection(_conString))
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand();
+                    try
+                    {
+                        command.Connection = con;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.CommandText = "[dbo].[getReportStock]";
+                        command.CommandTimeout = 1000;
+
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Username", Username);
+
+                        SqlDataAdapter da = new SqlDataAdapter();
+                        da.SelectCommand = command;
+                        da.Fill(dt);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    finally
+                    {
+                        con.Close();
+                    }
+                }
+                return dt;
+            }
+        }
     }
 }

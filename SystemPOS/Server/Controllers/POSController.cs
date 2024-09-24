@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using System.Net.Http.Json;
 using SystemPOS.Client.Services;
 using SystemPOS.Shared.POS;
 using static System.Net.WebRequestMethods;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SystemPOS.Server.Controllers
 {
@@ -277,6 +279,123 @@ namespace SystemPOS.Server.Controllers
                 _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
                 var resault = await _http.PostAsJsonAsync<POSmodel>("api/POSda/InputSales", data);
                 var result = await resault.Content.ReadFromJsonAsync<ResultModel<string>>();
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = "Bad request ToPOSapi" + ex.Message.ToString();
+                actionResult = BadRequest(res);
+            }
+            return actionResult;
+        }
+
+        [HttpGet("GetSales/{Username}")]
+        public async Task<IActionResult> GetSales([FromHeader(Name = "Authorization")] string token, string Username)
+        {
+            IActionResult actionResult = null;
+            ResultModel<List<POSmodel>> res = new ResultModel<List<POSmodel>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<POSmodel>>>($"api/POSda/GetSales/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+            }
+            catch(Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = "Bad request ToPOSapi" + ex.Message.ToString();
+                actionResult = BadRequest(res);
+            }
+            return actionResult;
+        }
+
+        [HttpGet("GetReportSales/{Username}")]
+        public async Task<IActionResult> GetReportSales([FromHeader(Name = "Authorization")] string token, string Username)
+        {
+            IActionResult actionResult = null;
+            ResultModel<List<ReportSales>> res = new ResultModel<List<ReportSales>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<ReportSales>>>($"api/POSda/GetReportSales/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                    actionResult = Ok(res);
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = "Bad request ToPOSapi" + ex.Message.ToString();
+                actionResult = BadRequest(res);
+            }
+            return actionResult;
+        }
+
+        [HttpGet("GetReportStock/{Username}")]
+        public async Task<IActionResult> GetReportStock([FromHeader(Name = "Authorization")] string token, string Username)
+        {
+            IActionResult actionResult = null;
+            ResultModel<List<ReportStock>> res = new ResultModel<List<ReportStock>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"{token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<ReportStock>>>($"api/POSda/GetReportStock/{Username}");
 
                 if (result.isSuccess)
                 {

@@ -13,6 +13,9 @@ namespace SystemPOS.Client.Services
         Task<ResultModel<List<Category>>> GetCategory(string Username, string token);
         Task<ResultModel<bool>> UpdateItem(respItem data, string token);
         Task<ResultModel<string>> InputSales(POSmodel data, string token);
+        Task<ResultModel<List<POSmodel>>> GetSales(string data, string token);
+        Task<ResultModel<List<ReportSales>>> GetReportSales(string Username, string token);
+        Task<ResultModel<List<ReportStock>>> GetReportStock(string Username, string token);
 
     }
 }

@@ -81,6 +81,8 @@ namespace SystemPOS.Client.Pages
                     listItem.Add(z);
                 }
             }
+
+            
             StateHasChanged();
         }
 

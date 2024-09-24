@@ -266,5 +266,107 @@ namespace SystemPOS.Client.Services
             }
             return res;
         }
+        public async Task<ResultModel<List<POSmodel>>> GetSales(string Username, string token)
+        {
+            ResultModel<List<POSmodel>> res = new ResultModel<List<POSmodel>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<POSmodel>>>($"api/ToPOSapi/GetSales/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<List<ReportSales>>> GetReportSales(string Username, string token)
+        {
+            ResultModel<List<ReportSales>> res = new ResultModel<List<ReportSales>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<ReportSales>>>($"api/ToPOSapi/GetReportSales/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch(Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
+        public async Task<ResultModel<List<ReportStock>>> GetReportStock(string Username, string token)
+        {
+            ResultModel<List<ReportStock>> res = new ResultModel<List<ReportStock>>();
+            try
+            {
+                _http.DefaultRequestHeaders.Clear();
+                _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                var result = await _http.GetFromJsonAsync<ResultModel<List<ReportStock>>>($"api/ToPOSapi/GetReportStock/{Username}");
+
+                if (result.isSuccess)
+                {
+                    res.Data = result.Data;
+
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    res.Data = null;
+                    res.isSuccess = result.isSuccess;
+                    res.ErrorCode = result.ErrorCode;
+                    res.ErrorMessage = result.ErrorMessage;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.Data = null;
+                res.isSuccess = false;
+                res.ErrorCode = "99";
+                res.ErrorMessage = ex.Message;
+            }
+            return res;
+        }
     }
 }
